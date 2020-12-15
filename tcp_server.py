@@ -1,7 +1,7 @@
 import socket
 import struct
 
-"""------------------------------------------------"""
+""">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"""
 import thuface
 affectnet7_table = {0:"Neutral", 1:"Happy", 2:"Sad", 3:"Surprise", 4:"Fear", 5:"Disgust", 6:"Anger"}
 detector = thuface.CV2FaceDetector("ckpt/haarcascade_frontalface_default.xml")
@@ -9,11 +9,11 @@ classifier = thuface.model.MobileNetV3_Small()
 classifier = thuface.get_trained_model(classifier,"ckpt/checkpoint_best.pth.tar")
 
 import torch
-device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
+device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 batch_solver = thuface.BatchSolver(detector, classifier, device, affectnet7_table, batch_size=100, DEBUG=True)
 
 
-"""------------------------------------------------"""
+"""<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
 
 # 回调函数，用于处理接收到的视频文件
 def on_video_complete(video_path, datetime, total_frame, format, frame_width, frame_height, video_size):
@@ -30,12 +30,14 @@ def on_video_complete(video_path, datetime, total_frame, format, frame_width, fr
     print("video_path", video_path)
 
     # 开始模型分析
+    """>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"""
     batch_solver.set_batch_size(total_frame)
     result = batch_solver.solve_path(video_path)
 
     # 返回分析结果
     json = batch_solver.to_json(result)
-
+    """<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
+    
     print("Recognise Result", json)
     print("Callback End")
     return ret, json
