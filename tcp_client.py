@@ -9,7 +9,7 @@ import hashlib
 # 测试Demo参数
 video_width = 1280
 video_height = 720
-frame_cnt = 10
+frame_cnt = 3
 interval_sec = 2
 video_url = 0#'rtsp://admin:bwton123@192.168.24.64:554'  # 0代表本机摄像头，如果使用网络摄像头，把此处的0换成url
 

@@ -25,7 +25,7 @@ def get_trained_model(model, param_path, map_location="cpu"):
     model.eval()
     return model
 
-class BatchSolver:
+class FaceBatchSolver:
     def __init__(self, detector, classifier, device, label, batch_size=128, DEBUG=False):
         self.detector = detector
         self.classifier = classifier
@@ -38,7 +38,6 @@ class BatchSolver:
             trans.Normalize(mean=[0.485, 0.456, 0.406],
                             std=[0.229, 0.224, 0.225]),
         ])
-        self.label_table = [v for k,v in label.items()]
         self.label_idx = [k for k,v in label.items()]
 
         self.classifier.to(device)
@@ -83,7 +82,7 @@ class BatchSolver:
         output = self.classifier(input).relu()[:, self.label_idx, ...]
         output = output.softmax(1)
         _, cls = torch.max(output, 1)
-        cls = [self.label_table[x] for x in cls.detach().numpy().tolist()]
+        cls = [x for x in cls.detach().numpy().tolist()]
         prob_vector = output.detach().numpy().tolist()
         prob_vector = np.round(prob_vector, 3)
 
@@ -113,6 +112,21 @@ class BatchSolver:
 
     def solve_in_json(self, imgs):
         return json.dumps(self.solve(imgs))
+
+    @staticmethod
+    def to_json(dct):
+        return json.dumps(dct)
+
+class ActionBatchSolver:
+    # not implemented
+    def __init__(self):
+        self.batch_size = 0
+
+    def solve_path(self, path):
+        return {"Vector":[[0.1, 0.1, 0.1]]*self.batch_size, "Class":[[False, False, False]]*self.batch_size, "Index":[x for x in range(self.batch_size)]}
+
+    def set_batch_size(self, batch_size):
+        self.batch_size = batch_size
 
     @staticmethod
     def to_json(dct):

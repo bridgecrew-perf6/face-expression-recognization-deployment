@@ -3,7 +3,7 @@ import pathlib
 
 setuptools.setup(
     name="thuface",
-    version=0.1,
+    version=0.2,
     description="THU Face Expression Recognizer",
     author="Xia Zhiyi",
     author_email="1399250123@qq.com",
