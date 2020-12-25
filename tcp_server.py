@@ -4,13 +4,18 @@ import struct
 """>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"""
 import thuface
 detector = thuface.CV2FaceDetector("ckpt/haarcascade_frontalface_default.xml")
-classifier = thuface.model.MobileNetV3_Small()
-classifier = thuface.get_trained_model(classifier,"ckpt/checkpoint_best.pth.tar")
+face_classifier = thuface.model.MobileNetV3_Small()
+face_classifier = thuface.get_trained_model(face_classifier,"ckpt/checkpoint_best.pth.tar")
+
+action_classifier = thuface.model.get_action_classifier(checkpoint_path="ckpt/resnext50-32x4d/res6/model_best.pth.tar")
+
+
+
 
 import torch
 device = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
-face_batch_solver = thuface.FaceBatchSolver(detector, classifier, device, label=thuface.affectnet7_table,batch_size=100, DEBUG=True)
-action_batch_solver = thuface.ActionBatchSolver()
+face_batch_solver = thuface.FaceBatchSolver(detector, face_classifier, device, label=thuface.affectnet7_table,batch_size=100, DEBUG=True)
+action_batch_solver = thuface.ActionBatchSolver(action_classifier, device, label=thuface.action_table, batch_size=100)
 
 
 """<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"""
@@ -35,7 +40,6 @@ def on_video_complete(video_path, datetime, total_frame, format, frame_width, fr
     face_batch_solver.set_batch_size(total_frame)
     face_result = face_batch_solver.solve_path(video_path)
 
-    # action (未实现，返回默认值)
     action_batch_solver.set_batch_size(total_frame)
     action_result = action_batch_solver.solve_path(video_path)
 
